@@ -1,7 +1,10 @@
-import { useRef, useImperativeHandle } from "react";
+import { useRef, useImperativeHandle  } from "react";
 
-export default function ResultModal({ ref, result, targetTime }) {
+export default function ResultModal({ ref, timeRemaining ,targetTime, onReset }) {
   const dialog = useRef();
+  const userLost = timeRemaining <= 0;
+  const formattedTimeRemaining = (timeRemaining / 1000).toFixed(2);
+  const score = Math.round((1 - timeRemaining / (targetTime * 1000)) * 100);
 
   useImperativeHandle(ref, () => {
     return {
@@ -13,14 +16,15 @@ export default function ResultModal({ ref, result, targetTime }) {
 
   return (
     <dialog className="result-modal" ref={dialog}>
-      <h2>You {result}</h2>
+     {userLost && <h2>You losse</h2>}
+     {!userLost && <h2>Your score: <strong>{score}</strong> </h2>}
       <p>
-        The target time was <strong>{targetTime} seconds.</strong>{" "}
+        The target time was <strong>{targetTime} seconds.</strong>
       </p>
       <p>
-        You stopeed the timer with <strong>x seconds.</strong>{" "}
+        You stopeed the timer with {formattedTimeRemaining} <strong>seconds left.</strong>
       </p>
-      <form action="dialog">
+      <form action="dialog" onSubmit={onReset}>
         <button>Close</button>
       </form>
     </dialog>
